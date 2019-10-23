@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.meal.entity.MealRoll;
 import com.thinkgem.jeesite.modules.meal.service.MealRollService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,10 @@ public class MealRollController extends BaseController {
 	@RequiresPermissions("meal:mealRoll:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(MealRoll mealRoll, HttpServletRequest request, HttpServletResponse response, Model model) {
+		User user = UserUtils.getUser();
+		if ("3".equals(user.getUserType())){
+			mealRoll.setReceiver(user);
+		}
 		Page<MealRoll> page = mealRollService.findPage(new Page<MealRoll>(request, response), mealRoll); 
 		model.addAttribute("page", page);
 		return "modules/meal/mealRollList";

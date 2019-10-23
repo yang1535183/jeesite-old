@@ -88,7 +88,14 @@
 					${mealRoll.coopBusiness.name}
 				</td>
 				<td>
-					${mealRoll.receive}
+					<c:choose>
+						<c:when test="${mealRoll.receive eq '0'}">
+							未领取
+						</c:when>
+						<c:otherwise>
+							已领取
+						</c:otherwise>
+					</c:choose>
 				</td>
 				<td>
 					${mealRoll.remarks}

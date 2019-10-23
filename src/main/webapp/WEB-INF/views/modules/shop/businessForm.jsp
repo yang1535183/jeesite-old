@@ -27,7 +27,7 @@
 		// 地址选择
 		function choosePoint() {
 		    var jwd = $("#jwd").val();
-			window.open("${ctx}/map/baiDuMap/baseMap?jwd="+jwd);
+			window.open("${ctx}/map/gaoDeMap/baseMap?jwd="+jwd);
         }
         
         // 确认坐标点

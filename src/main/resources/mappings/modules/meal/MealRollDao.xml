@@ -67,6 +67,9 @@
 			<if test="receive != null and receive != ''">
 				AND a.receive = #{receive}
 			</if>
+			<if test="receiver != null and receiver.id != null and receiver.id != ''">
+				AND a.receiver = #{receiver.id}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
