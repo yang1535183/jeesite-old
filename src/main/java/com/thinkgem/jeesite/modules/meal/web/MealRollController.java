@@ -18,11 +18,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 餐卷管理Controller
@@ -99,6 +102,21 @@ public class MealRollController extends BaseController {
 		mealRollService.save(mealRoll);
 		addMessage(redirectAttributes, "餐卷领取成功");
 		return "redirect:"+Global.getAdminPath()+"/meal/mealRoll/?repage";
+	}
+
+	@RequestMapping(value = "getById")
+	@ResponseBody
+	public Map getById(String id){
+		Map<String,Object> result = new HashMap<String,Object>();
+		MealRoll mealRoll = mealRollService.get(id);
+		if (mealRoll != null && !StringUtils.isEmpty(mealRoll.getId())){
+			result.put("statue",1);
+			result.put("msg",mealRoll);
+		}else {
+			result.put("statue",0);
+			result.put("msg","请求失败");
+		}
+		return result;
 	}
 
 }
