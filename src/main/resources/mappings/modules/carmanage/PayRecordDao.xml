@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.carmanage.dao.PayRecordDao">
+    
+	<sql id="payRecordColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		c.id AS "carId.id",
+		c.park_number AS "carId.parkNumber",
+		c.car_type AS "carId.carType",
+		c.owner AS "carId.owner",
+		a.pay_date AS "payDate",
+		a.end_date AS "endDate",
+		a.pay_money AS "payMoney",
+		a.pay_name AS "payName"
+	</sql>
+	
+	<sql id="payRecordJoins">
+		left join car c on c.id = a.car_id
+	</sql>
+    
+	<select id="get" resultType="PayRecord">
+		SELECT 
+			<include refid="payRecordColumns"/>
+		FROM pay_record a
+		<include refid="payRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PayRecord">
+		SELECT 
+			<include refid="payRecordColumns"/>
+		FROM pay_record a
+		<include refid="payRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks = #{remarks}
+			</if>
+			<if test="carId != null and carId.parkNumber != null and carId.parkNumber != ''">
+				AND c.park_number = #{carId.parkNumber}
+			</if>
+			<if test="payDate != null and payDate != ''">
+				AND a.pay_date &gt;= #{payDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date &lt;= #{endDate}
+			</if>
+			<if test="payMoney != null and payMoney != ''">
+				AND a.pay_money = #{payMoney}
+			</if>
+			<if test="payName != null and payName != ''">
+				AND a.pay_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{payName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{payName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{payName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.end_date DESC ,a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PayRecord">
+		SELECT 
+			<include refid="payRecordColumns"/>
+		FROM pay_record a
+		<include refid="payRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO pay_record(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			car_id,
+			pay_date,
+			end_date,
+			pay_money,
+			pay_name
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{carId.id},
+			#{payDate},
+			#{endDate},
+			#{payMoney},
+			#{payName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE pay_record SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			car_id = #{carId.id},
+			pay_date = #{payDate},
+			end_date = #{endDate},
+			pay_money = #{payMoney},
+			pay_name = #{payName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE pay_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
